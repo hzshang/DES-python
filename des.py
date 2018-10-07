@@ -130,17 +130,18 @@ def encrypt_des_unit(pt,key_pool,times):
         l,r = r,xorbits(l,F(r,key_pool[i]))
     return substitution(r+l,ip2)
 
-def encrypt_des(pt,key,times = 8):
+def encrypt_des(pt,key,times = 8,iv="\x00"*8):
     """ 
     mode : CBC
     IV = 0
     """
+    assert len(key)==8
     length=(len(pt)+7)>>3<<3
     pt = pt.ljust(length,"\x00")
     ct = []
     key = str2bits(key)
     key_pool = init_subkeys(key,times)
-    first = encrypt_des_unit(str2bits(pt[0:8]),key_pool,times)
+    first = encrypt_des_unit(xorbits(str2bits(iv),str2bits(pt[0:8])),key_pool,times)
     ct += first
     for i in range(8,length,8):
         ct+=encrypt_des_unit(xorbits(ct[-64:],str2bits(pt[i:i+8])),key_pool,times)
@@ -155,16 +156,17 @@ def decrypto_des_unit(ct,key_pool,times):
         l,r = xorbits(r,F(l,key_pool[i])),l
     return substitution(l+r,ip2)
 
-def decrypt_des(ct,key,times=8):
+def decrypt_des(ct,key,times=8,iv="\x00"*8):
     """
     mode : CBC 
-    IV = 0
     """
+    assert len(key)==8
     key = str2bits(key)
     key_pool = init_subkeys(key,times)
     length = len(ct)
+    assert length%8==0
     pt = []
-    first = decrypto_des_unit(str2bits(ct[0:8]),key_pool,times)
+    first = xorbits(str2bits(iv),decrypto_des_unit(str2bits(ct[0:8]),key_pool,times))
     pt += first
     for i in range(8,length,8):
         pt += xorbits(str2bits(ct[i-8:i]),decrypto_des_unit(str2bits(ct[i:i+8]),key_pool,times))

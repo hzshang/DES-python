@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="baidu-site-verification" content="a21ZEnQAKj" />
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+
+  <title>DES 8轮加解密 CBC模式|DES</title>
+  <link rel="stylesheet" href="https://cdn.90so.net/layui/2.4.3/css/layui.css">
+  <style type="text/css">
+    a.item-header{
+        color: #009688;
+    }
+  </style>
+  
+  <style type="text/css">
+    .load{
+        margin-top: 20px;
+    }
+  </style>
+
+</head>
+<body>
+        <div class="layui-layout layui-layout-admin fly_header">
+            <div class="layui-header" style="background-color:rgba(255,255,255,0.9);">
+            </div>
+        </div>
+        <!-- 内容主体区域 -->
+        
+            <!-- 内容主体区域 -->
+                    <div class="layui-container" style="margin-top:70px;min-height:100%">
+                            <div class="layui-row">
+                                    <div class="layui-col-md4">
+                                    <fieldset class="layui-elem-field layui-field-title" style="margin:10px 0 0;">
+                                        <legend ><h4>DES 8轮加解密</h4></legend>
+                                    </fieldset>
+                                    </div>
+                                    <div class="layui-col-md8"></div>
+                                </div>
+                                <div class="layui-row" style="margin-top:10px;">
+                                        <div class="layui-col-md12">
+                                            <span style="color:#777">DES crypto</span>
+                                        </div>
+                                    </div>
+                            <div class="layui-row">
+                                    <form class="layui-form" id = "form">
+                                        <div class="layui-form-item layui-form-text">
+                                                <pre style="margin-bottom:-20px;">
+                                                  <textarea placeholder="输入待加解密内容" id="input" name="text" class="layui-textarea" style="height:250px;"></textarea>
+                                                </pre>
+                                        </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">密钥</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="key" id="key" lay-verify="required" lay-vertype="tips" autocomplete="off" placeholder="key，8bytes，0填充" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="iv">
+                                    <label class="layui-form-label">初始向量</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="iv" id="iv" autocomplete="off" placeholder="iv，8bytes，0填充" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+                                        <div class="layui-form-item" style="text-align:center;margin-bottom:-5px;">
+                                                <div class="layui-inline">
+                                                    <div class="layui-input-block">
+                                                        <button id="crypto" class="layui-btn" >加&nbsp;&nbsp;密</button>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-inline">
+                                                    <div class="layui-input-block">
+                                                        <button id="decrypto" class="layui-btn" >解&nbsp;&nbsp;密</button>
+                                                    </div>
+                                                </div>
+                                        </div>
+                                    </form>
+                            </div>
+							<div class="load" id="result" style="display: none;">
+							<style type="text/css">
+								.ssecc-show{
+									border:solid 1px #d2d2d2;
+									padding:10px;
+									text-align:left;
+									color:#333;
+								}
+							</style>
+							<div class="layui-row">
+								<div class="ssecc-show"><pre id="output"></pre></div>
+							</div>
+							</div>
+                        </div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        function send_data(type){
+            var form=new FormData();
+            form.append('input',$("#input").val());
+            form.append('key',$("#key").val());
+            form.append('type',type);
+			form.append('iv',$("#iv").val());
+            $.ajax({
+                url:'./',
+                type:'POST',
+                data:form,
+                processData: false,
+                contentType: false,
+                success:function(data){
+                    $("#output").text(data);
+                    $("#result").show();
+                },
+                error:function(){
+                    $("#result").hide();
+                }
+            })
+        }
+        $("#form").submit(function(event){
+            event.preventDefault();
+        });
+        $("#crypto").click(function(){
+            send_data("crypto");
+        });
+        $("#decrypto").click(function(){
+            send_data("decrypto");
+        });
+    });
+</script>
+</body>
+</html>
